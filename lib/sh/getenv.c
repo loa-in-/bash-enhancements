@@ -31,6 +31,8 @@
 #include <errno.h>
 #include <shell.h>
 
+#include <execute_cmd.h>
+
 #ifndef errno
 extern int errno;
 #endif
@@ -160,6 +162,7 @@ setenv (name, value, rewrite)
      int rewrite;
 {
   SHELL_VAR *var;
+  WORD_LIST *funcargs;
   char *v;
 
   if (name == 0 || *name == '\0' || strchr (name, '=') != 0)
@@ -179,6 +182,9 @@ setenv (name, value, rewrite)
 
   if (var == 0)
     return -1;
+
+  funcargs = make_word_list(make_word(name), NULL);
+  execute_shell_function("X_BASH_ENV_CHANGED", funcargs);
 
   VUNSETATTR (var, att_invisible);
   VSETATTR (var, att_exported);
